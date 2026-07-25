@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Insights Analytics — Sector Arrocero Colombiano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root{
+    --verde-oscuro:#1B4332;
+    --verde-medio:#3E7C59;
+    --dorado:#C9A227;
+    --azul-petroleo:#14555A;
+    --gris-claro:#F1F0EA;
+    --blanco:#FFFFFF;
+    --texto:#1E2421;
+    --texto-suave:#5B655F;
+    --riesgo:#B5473A;
+    --atencion:#C9A227;
+    --oportunidad:#2D6A4F;
+    --info:#3D7A8A;
+    --borde:#DEDCD1;
+    --sombra: 0 1px 2px rgba(27,67,50,0.06), 0 4px 16px rgba(27,67,50,0.06);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Work Sans', sans-serif;
+    background:var(--gris-claro);
+    color:var(--texto);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces', serif;
+    color:var(--verde-oscuro);
+    letter-spacing:-0.01em;
+  }
+  .mono{font-family:'JetBrains Mono', monospace;}
+
+  /* ---------- Header / hero ---------- */
+  header.hero{
+    background:
+      radial-gradient(1200px 400px at 15% -10%, rgba(201,162,39,0.18), transparent 60%),
+      linear-gradient(135deg, var(--verde-oscuro) 0%, #0F2E22 100%);
+    color:var(--blanco);
+    padding:34px 40px 30px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; right:-60px; bottom:-90px;
+    width:340px; height:340px;
+    background: repeating-linear-gradient(115deg, rgba(201,162,39,0.10) 0 2px, transparent 2px 14px);
+    border-radius:50%;
+    pointer-events:none;
+  }
+  .hero-top{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:24px; flex-wrap:wrap;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:#CFE4D6; opacity:.85;
+  }
+  .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--dorado);}
+  h1.title{
+    font-size:clamp(28px, 3.4vw, 42px);
+    font-weight:600;
+    margin:10px 0 6px;
+    max-width:820px;
+    color:var(--blanco);
+    line-height:1.08;
+  }
+  .subtitle{
+    font-size:15px; color:#D9E6DC; max-width:640px; line-height:1.55; margin:0 0 4px;
+  }
+  .question{
+    margin-top:18px; padding:14px 18px; border-left:3px solid var(--dorado);
+    background:rgba(255,255,255,0.05); border-radius:0 6px 6px 0;
+    font-size:14px; color:#EDEFE8; max-width:760px; line-height:1.5;
+  }
+  .question b{color:var(--dorado); font-weight:600;}
+
+  .student-card{
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:10px;
+    padding:14px 18px;
+    min-width:230px;
+    flex-shrink:0;
+  }
+  .student-card p{margin:0; line-height:1.5;}
+  .student-card .sc-label{
+    font-family:'JetBrains Mono', monospace; font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; color:#9FC2AB; margin-bottom:2px;
+  }
+  .student-card .sc-name{font-size:14px; font-weight:600; color:var(--blanco);}
+  .student-card .sc-mail a{color:#CFE4D6; font-size:12px; text-decoration:none;}
+  .student-card .sc-mail a:hover{text-decoration:underline;}
+  .student-card .sc-divider{height:1px; background:rgba(255,255,255,0.14); margin:9px 0;}
+  .student-card .sc-line{font-size:12.5px; color:#D9E6DC;}
+  .student-card .sc-line b{color:var(--dorado); font-weight:600;}
+
+  /* ---------- Nav ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:50;
+    background:var(--blanco);
+    border-bottom:1px solid var(--borde);
+    display:flex; gap:2px; padding:0 24px;
+    overflow-x:auto;
+    box-shadow: var(--sombra);
+  }
+  nav.tabs button{
+    font-family:'Work Sans', sans-serif;
+    background:none; border:none; cursor:pointer;
+    padding:16px 18px 13px; font-size:14px; font-weight:600;
+    color:var(--texto-suave);
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.tabs button .num{
+    font-family:'JetBrains Mono', monospace; font-weight:400; font-size:11px;
+    color:var(--dorado); margin-right:7px;
+  }
+  nav.tabs button:hover{color:var(--verde-oscuro);}
+  nav.tabs button.active{color:var(--verde-oscuro); border-bottom-color:var(--dorado);}
+
+  main{max-width:1240px; margin:0 auto; padding:28px 24px 80px;}
+  section.page{display:none; animation:fadein .25s ease;}
+  section.page.active{display:block;}
+  @keyframes fadein{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  .page-head{margin-bottom:20px;}
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace; font-size:11px; letter-spacing:.12em;
+    text-transform:uppercase; color:var(--azul-petroleo); margin:0 0 6px;
+  }
+  .page-head h2{font-size:26px; margin:0 0 6px;}
+  .page-head p{color:var(--texto-suave); font-size:14px; max-width:680px; margin:0;}
+
+  /* ---------- Filters ---------- */
+  .filters{
+    display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 22px;
+    background:var(--blanco); border:1px solid var(--borde); border-radius:10px;
+    padding:14px 16px;
+  }
+  .filter-group{display:flex; flex-direction:column; gap:4px;}
+  .filter-group label{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--texto-suave); font-weight:600;
+  }
+  .filter-group select{
+    font-family:'Work Sans', sans-serif;
+    padding:7px 10px; border-radius:6px; border:1px solid var(--borde);
+    background:var(--gris-claro); color:var(--texto); font-size:13px;
+    min-width:140px; cursor:pointer;
+  }
+  .filter-group select:focus{outline:2px solid var(--verde-medio); outline-offset:1px;}
+
+  /* ---------- KPI cards ---------- */
+  .kpi-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(168px,1fr));
+    gap:12px; margin-bottom:24px;
+  }
+  .kpi{
+    background:var(--blanco); border:1px solid var(--borde); border-radius:10px;
+    padding:16px 16px 14px; box-shadow:var(--sombra);
+    position:relative; overflow:hidden;
+  }
+  .kpi::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--verde-medio);
+  }
+  .kpi.gold::before{background:var(--dorado);}
+  .kpi.petrol::before{background:var(--azul-petroleo);}
+  .kpi-label{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--texto-suave);
+    margin:0 0 8px; font-weight:600;
+  }
+  .kpi-value{font-family:'Fraunces',serif; font-size:24px; font-weight:600; color:var(--verde-oscuro); line-height:1.1;}
+  .kpi-unit{font-size:12px; color:var(--texto-suave); margin-left:4px; font-weight:500;}
+  .kpi-delta{font-size:12px; margin-top:6px; font-weight:600;}
+  .kpi-delta.up{color:var(--oportunidad);}
+  .kpi-delta.down{color:var(--riesgo);}
+  .kpi-delta.flat{color:var(--texto-suave);}
+
+  /* ---------- Grid layout for charts ---------- */
+  .grid{display:grid; gap:16px; margin-bottom:20px;}
+  .grid.cols-2{grid-template-columns:1fr 1fr;}
+  .grid.cols-3{grid-template-columns:repeat(3, 1fr);}
+  @media(max-width:900px){ .grid.cols-2, .grid.cols-3{grid-template-columns:1fr;} }
+
+  .card{
+    background:var(--blanco); border:1px solid var(--borde); border-radius:12px;
+    padding:18px 20px 14px; box-shadow:var(--sombra);
+  }
+  .card.span-2{grid-column:span 2;}
+  @media(max-width:900px){ .card.span-2{grid-column:span 1;} }
+  .card h3{font-size:15px; margin:0 0 2px; font-weight:600;}
+  .card .card-note{font-size:12px; color:var(--texto-suave); margin:0 0 12px;}
+  .card canvas{max-width:100%;}
+  .insight{
+    margin-top:12px; padding:10px 12px; background:var(--gris-claro); border-radius:8px;
+    font-size:12.5px; color:var(--texto); line-height:1.5; border-left:3px solid var(--verde-medio);
+  }
+  .insight b{color:var(--verde-oscuro);}
+
+  /* ---------- Heatmap ---------- */
+  .heatmap{border-collapse:collapse; width:100%; font-size:12px;}
+  .heatmap th{
+    text-align:left; font-size:10.5px; text-transform:uppercase; color:var(--texto-suave);
+    padding:6px 8px; border-bottom:1px solid var(--borde); font-weight:600;
+  }
+  .heatmap td{padding:9px 8px; text-align:center; font-family:'JetBrains Mono',monospace; font-weight:500;}
+  .heatmap td.zonelabel{text-align:left; font-family:'Work Sans',sans-serif; font-weight:600; color:var(--texto);}
+
+  /* ---------- Alert cards (matriz) ---------- */
+  .alert-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(230px,1fr)); gap:12px; margin-top:8px;}
+  .alert{
+    border-radius:10px; padding:14px 16px; border:1px solid var(--borde);
+    background:var(--blanco); box-shadow:var(--sombra);
+  }
+  .alert .tag{
+    display:inline-block; font-size:10px; text-transform:uppercase; letter-spacing:.06em;
+    font-weight:700; padding:3px 8px; border-radius:20px; margin-bottom:8px;
+  }
+  .alert.riesgo .tag{background:rgba(181,71,58,0.12); color:var(--riesgo);}
+  .alert.atencion .tag{background:rgba(201,162,39,0.16); color:#8a6b12;}
+  .alert.oportunidad .tag{background:rgba(45,106,79,0.12); color:var(--oportunidad);}
+  .alert.info .tag{background:rgba(61,122,138,0.12); color:var(--info);}
+  .alert h4{margin:0 0 6px; font-size:14px; font-family:'Fraunces',serif; color:var(--verde-oscuro);}
+  .alert p{margin:0; font-size:12.5px; color:var(--texto-suave); line-height:1.5;}
+
+  .reco-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px;}
+  .reco-list li{
+    display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.5;
+    padding:10px 12px; background:var(--gris-claro); border-radius:8px;
+  }
+  .reco-list .n{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--blanco);
+    background:var(--verde-oscuro); border-radius:50%; width:20px; height:20px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px;
+  }
+
+  footer.dash-footer{
+    max-width:1240px; margin:0 auto; padding:10px 24px 60px; color:var(--texto-suave); font-size:12px;
+  }
+  .legend-note{display:flex; gap:16px; flex-wrap:wrap; margin-top:6px;}
+  .legend-note span{display:flex; align-items:center; gap:6px;}
+  .legend-note i{width:9px; height:9px; border-radius:50%; display:inline-block;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-top">
+    <div>
+      <div class="brand"><span class="dot"></span>GLOBAL INSIGHTS ANALYTICS</div>
+      <h1 class="title">Dashboard estratégico del sector arrocero colombiano</h1>
+      <p class="subtitle">Producción, rendimiento, precios, costos e importaciones — un análisis integrado para identificar oportunidades y riesgos en la cadena arrocera nacional.</p>
+    </div>
+    <div class="student-card">
+      <p class="sc-label">Estudiante</p>
+      <p class="sc-name">Jaime Luis Hernández Burgos</p>
+      <p class="sc-mail"><a href="mailto:jaime.hernandez@ucatalunya.edu.co">jaime.hernandez@ucatalunya.edu.co</a></p>
+      <div class="sc-divider"></div>
+      <p class="sc-line"><b>Actividad —</b> Semana 6</p>
+      <p class="sc-line">Especialización en Big Data y Analítica de Datos</p>
+      <p class="sc-line"><b>Curso —</b> Limpieza y Transformación de Datos</p>
+      <p class="sc-line">Docente: Jair Bermúdez</p>
+    </div>
+  </div>
+  <div class="question">
+    <b>Pregunta de negocio —</b> ¿Cómo puede Global Insights Analytics identificar oportunidades y riesgos estratégicos en el sector arrocero colombiano a partir de la integración de datos productivos, económicos, comerciales e internacionales?
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button class="active" data-page="p1"><span class="num">01</span>Resumen ejecutivo</button>
+  <button data-page="p2"><span class="num">02</span>Producción y rendimiento</button>
+  <button data-page="p3"><span class="num">03</span>Precios y costos</button>
+  <button data-page="p4"><span class="num">04</span>Comercio exterior</button>
+  <button data-page="p5"><span class="num">05</span>Matriz estratégica</button>
+</nav>
+
+<main>
+
+  <!-- ============ PAGE 1: RESUMEN EJECUTIVO ============ -->
+  <section class="page active" id="p1">
+    <div class="page-head">
+      <p class="eyebrow">01 — Visión general</p>
+      <h2>Resumen ejecutivo</h2>
+      <p>Comportamiento general del sector arrocero colombiano para el año seleccionado, con los ocho indicadores clave que resumen su desempeño productivo, económico y comercial.</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="p1-year">Año</label>
+        <select id="p1-year"></select>
+      </div>
+      <div class="filter-group">
+        <label for="p1-zona">Zona arrocera</label>
+        <select id="p1-zona">
+          <option value="TOTAL NACIONAL">Total nacional</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="kpi-grid" id="p1-kpis"></div>
+
+    <div class="grid cols-2">
+      <div class="card span-2">
+        <h3>Tendencia anual — producción y rendimiento nacional</h3>
+        <p class="card-note">Producción total (barras, eje izq.) y rendimiento promedio (línea, eje der.), Total Nacional 2020–2024.</p>
+        <canvas id="chart-p1-trend" height="90"></canvas>
+        <div class="insight" id="p1-insight"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 2: PRODUCCIÓN Y RENDIMIENTO ============ -->
+  <section class="page" id="p2">
+    <div class="page-head">
+      <p class="eyebrow">02 — Desempeño productivo</p>
+      <h2>Producción y rendimiento</h2>
+      <p>Desempeño por zona arrocera y periodo: qué zonas concentran la producción y cuáles logran mayor eficiencia por hectárea.</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="p2-year">Año</label>
+        <select id="p2-year"></select>
+      </div>
+      <div class="filter-group">
+        <label for="p2-semestre">Semestre</label>
+        <select id="p2-semestre">
+          <option value="AMBOS">Año completo</option>
+          <option value="I semestre">I semestre</option>
+          <option value="II semestre">II semestre</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Producción por zona arrocera</h3>
+        <p class="card-note">Toneladas producidas, año y semestre seleccionados.</p>
+        <canvas id="chart-p2-prodzona" height="220"></canvas>
+      </div>
+      <div class="card">
+        <h3>Rendimiento por zona</h3>
+        <p class="card-note">t/ha, año y semestre seleccionados. Barra dorada = mejor desempeño.</p>
+        <canvas id="chart-p2-rendzona" height="220"></canvas>
+      </div>
+      <div class="card span-2">
+        <h3>Producción nacional por año — evolución</h3>
+        <p class="card-note">Línea de producción total nacional, 2020–2024 (años con datos completos).</p>
+        <canvas id="chart-p2-serie" height="90"></canvas>
+      </div>
+      <div class="card span-2">
+        <h3>Mapa de calor — rendimiento (t/ha) por zona y año</h3>
+        <p class="card-note">Verde oscuro = alto rendimiento · dorado = rendimiento medio-bajo. Permite ver zonas líderes y rezagadas de un vistazo.</p>
+        <div style="overflow-x:auto;"><table class="heatmap" id="heatmap-rend"></table></div>
+      </div>
+      <div class="card span-2">
+        <h3>Área sembrada vs. área cosechada por zona</h3>
+        <p class="card-note">Hectáreas, año y semestre seleccionados. La brecha entre ambas indica pérdidas de área por clima, plagas u otros factores.</p>
+        <canvas id="chart-p2-areas" height="200"></canvas>
+        <div class="insight" id="p2-insight"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 3: PRECIOS Y COSTOS ============ -->
+  <section class="page" id="p3">
+    <div class="page-head">
+      <p class="eyebrow">03 — Economía del cultivo</p>
+      <h2>Precios y costos</h2>
+      <p>Evolución del precio del arroz paddy verde frente a la presión de costos de producción por hectárea.</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="p3-year">Año (composición de costos)</label>
+        <select id="p3-year"></select>
+      </div>
+      <div class="filter-group">
+        <label for="p3-semestre">Semestre (composición de costos)</label>
+        <select id="p3-semestre">
+          <option value="II semestre">II semestre</option>
+          <option value="I semestre">I semestre</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card span-2">
+        <h3>Precio mensual del arroz paddy verde</h3>
+        <p class="card-note">COP por tonelada, serie mensual 2020–2025.</p>
+        <canvas id="chart-p3-precio" height="80"></canvas>
+      </div>
+      <div class="card span-2">
+        <h3>Precio vs. costo por hectárea — tendencias económicas</h3>
+        <p class="card-note">Dos ejes distintos: precio en COP/t (izq.) y costo en COP/ha (der.). No son unidades equivalentes — se comparan como tendencias, no como margen directo.</p>
+        <canvas id="chart-p3-preciocosto" height="90"></canvas>
+      </div>
+      <div class="card">
+        <h3>Composición de costos por rubro</h3>
+        <p class="card-note">COP/ha, semestre y año seleccionados.</p>
+        <canvas id="chart-p3-rubros" height="240"></canvas>
+      </div>
+      <div class="card">
+        <h3>Costo total por hectárea — evolución semestral</h3>
+        <p class="card-note">COP/ha, todos los semestres disponibles.</p>
+        <canvas id="chart-p3-costoevol" height="240"></canvas>
+        <div class="insight" id="p3-insight"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 4: COMERCIO EXTERIOR ============ -->
+  <section class="page" id="p4">
+    <div class="page-head">
+      <p class="eyebrow">04 — Posición internacional</p>
+      <h2>Comercio exterior e internacional</h2>
+      <p>Comportamiento de las importaciones colombianas y comparación del desempeño nacional frente a otros países productores (FAOSTAT).</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="p4-year">Año</label>
+        <select id="p4-year"></select>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h3>Importaciones por tipo de arroz</h3>
+        <p class="card-note">Toneladas, año seleccionado.</p>
+        <canvas id="chart-p4-importipo" height="220"></canvas>
+      </div>
+      <div class="card">
+        <h3>Importaciones totales — evolución anual</h3>
+        <p class="card-note">Toneladas, arroz blanco + paddy seco, 2020–2025.</p>
+        <canvas id="chart-p4-imporserie" height="220"></canvas>
+      </div>
+      <div class="card span-2">
+        <h3>Ranking internacional de producción (FAOSTAT)</h3>
+        <p class="card-note">Toneladas, año seleccionado. Colombia resaltada en dorado.</p>
+        <canvas id="chart-p4-rankprod" height="220"></canvas>
+      </div>
+      <div class="card span-2">
+        <h3>Comparación internacional de rendimiento</h3>
+        <p class="card-note">t/ha, año seleccionado. La línea punteada marca el promedio del grupo de países comparados.</p>
+        <canvas id="chart-p4-rankrend" height="220"></canvas>
+        <div class="insight" id="p4-insight"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 5: MATRIZ ESTRATÉGICA ============ -->
+  <section class="page" id="p5">
+    <div class="page-head">
+      <p class="eyebrow">05 — Decisiones estratégicas</p>
+      <h2>Matriz estratégica</h2>
+      <p>Cruce de producción y rendimiento por zona, alertas automáticas y recomendaciones para orientar decisiones de inversión y política sectorial.</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="p5-year">Año</label>
+        <select id="p5-year"></select>
+      </div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card span-2">
+        <h3>Matriz producción vs. rendimiento por zona</h3>
+        <p class="card-note">Cada burbuja es una zona arrocera; tamaño = área cosechada. Cuadrante superior derecho = alto volumen y alta eficiencia.</p>
+        <canvas id="chart-p5-scatter" height="260"></canvas>
+      </div>
+    </div>
+
+    <h3 style="margin:26px 0 4px;">Alertas estratégicas</h3>
+    <p class="card-note" style="margin-bottom:6px;">Generadas automáticamente a partir de las variaciones interanuales en costo, rendimiento e importaciones.</p>
+    <div class="alert-grid" id="alert-grid"></div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3>Recomendaciones estratégicas</h3>
+      <p class="card-note">Con base en los hallazgos del año seleccionado.</p>
+      <ol class="reco-list" id="reco-list" style="padding:0; list-style:none;"></ol>
+    </div>
+  </section>
+
+</main>
+
+<footer class="dash-footer">
+  <div class="legend-note">
+    <span><i style="background:var(--oportunidad)"></i>Oportunidad</span>
+    <span><i style="background:var(--atencion)"></i>Atención</span>
+    <span><i style="background:var(--riesgo)"></i>Riesgo</span>
+    <span><i style="background:var(--info)"></i>Contexto</span>
+  </div>
+  <p style="margin-top:10px;">Fuentes: FEDEARROZ / Fondo Nacional del Arroz, DANE, FAOSTAT. Preparado por Global Insights Analytics para el Trabajo Final Integrador — Visualización Avanzada de Datos.</p>
+</footer>
+
+<script>
+/* ================= DATA ================= */
+const RAW = [{"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.2, "unidad": "t/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 3.7, "unidad": "t/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.3, "unidad": "t/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 3.9, "unidad": "t/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.6, "unidad": "t/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.1, "unidad": "t/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.2, "unidad": "t/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.5, "unidad": "t/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.5, "unidad": "t/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.6, "unidad": "t/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 5.6, "unidad": "t/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 5.8, "unidad": "t/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 5.9, "unidad": "t/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 5.5, "unidad": "t/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 6.1, "unidad": "t/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.4, "unidad": "t/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.1, "unidad": "t/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.4, "unidad": "t/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.2, "unidad": "t/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.4, "unidad": "t/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 4.8, "unidad": "t/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 5.5, "unidad": "t/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 6.2, "unidad": "t/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 6.0, "unidad": "t/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 5.8, "unidad": "t/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 5.6, "unidad": "t/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 5.3, "unidad": "t/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 5.7, "unidad": "t/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 5.5, "unidad": "t/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 5.7, "unidad": "t/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 34623.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 30893.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 11935.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 33353.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 43284.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 39758.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 69006.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 71239.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 66645.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 61986.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 79788.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 70452.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 11750.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 10748.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 12051.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 5922.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 14417.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 12722.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 41585.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 42772.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 36132.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 33298.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 43594.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 43422.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 21121.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 19716.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 16355.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 16714.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 19814.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 20246.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 178085.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 175368.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 143118.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 151273.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 200897.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 186600.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 34623.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 31481.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 32654.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 33971.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 43418.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 69006.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 71239.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 69216.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 61986.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 79875.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 11750.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 10748.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 11411.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 5922.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 14418.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 41585.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 42917.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 43637.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 33298.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 44142.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 21234.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 19820.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 20304.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 16811.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 20141.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 178199.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 176205.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 177222.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 151988.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 201994.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 170569.0, "unidad": "t"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 156449.0, "unidad": "t"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 131540.0, "unidad": "t"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 162486.0, "unidad": "t"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 238185.0, "unidad": "t"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 534794.0, "unidad": "t"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 494563.0, "unidad": "t"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 440950.0, "unidad": "t"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 491037.0, "unidad": "t"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 560352.0, "unidad": "t"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 73326.0, "unidad": "t"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 70022.0, "unidad": "t"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 52862.0, "unidad": "t"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 79421.0, "unidad": "t"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 70048.0, "unidad": "t"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 1644963.0, "unidad": "t"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 1438700.0, "unidad": "t"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 1287268.0, "unidad": "t"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 1270648.0, "unidad": "t"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 1271318.0, "unidad": "t"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 97475.0, "unidad": "t"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 113758.0, "unidad": "t"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 113608.0, "unidad": "t"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 114339.0, "unidad": "t"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 119022.0, "unidad": "t"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 2521127.0, "unidad": "t"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 2273492.0, "unidad": "t"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 2026227.0, "unidad": "t"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 2117930.0, "unidad": "t"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 2258926.0, "unidad": "t"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 142825.0, "unidad": "t"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 116877.0, "unidad": "t"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 53045.0, "unidad": "t"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 149588.0, "unidad": "t"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 194906.0, "unidad": "t"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Producción", "valor": 191763.0, "unidad": "t"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 484205.0, "unidad": "t"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 486885.0, "unidad": "t"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 490270.0, "unidad": "t"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 451983.0, "unidad": "t"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 573229.0, "unidad": "t"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Producción", "valor": 528144.0, "unidad": "t"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 66479.0, "unidad": "t"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 63416.0, "unidad": "t"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 76929.0, "unidad": "t"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 35902.0, "unidad": "t"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 85267.0, "unidad": "t"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Producción", "valor": 80713.0, "unidad": "t"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 216440.0, "unidad": "t"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 216100.0, "unidad": "t"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 202640.0, "unidad": "t"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 177531.0, "unidad": "t"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 239655.0, "unidad": "t"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Producción", "valor": 249138.0, "unidad": "t"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 88887.0, "unidad": "t"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 97444.0, "unidad": "t"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 91902.0, "unidad": "t"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 97263.0, "unidad": "t"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 115541.0, "unidad": "t"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Producción", "valor": 106395.0, "unidad": "t"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 998837.0, "unidad": "t"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 980722.0, "unidad": "t"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 914786.0, "unidad": "t"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 912267.0, "unidad": "t"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 1208599.0, "unidad": "t"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Producción", "valor": 1156153.0, "unidad": "t"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 32067.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 41641.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 34306.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 31037.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 47196.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área sembrada", "valor": 51620.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 65199.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 74846.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 72820.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 58885.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 65587.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área sembrada", "valor": 73735.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 6183.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 13161.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 12451.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 9058.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 14498.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área sembrada", "valor": 12415.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 295260.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 302696.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 273147.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 240248.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 246277.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área sembrada", "valor": 236092.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 18847.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 20528.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 20924.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 18466.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 19090.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área sembrada", "valor": 20559.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 417556.0, "unidad": "ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 452872.0, "unidad": "ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 413648.0, "unidad": "ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 357693.0, "unidad": "ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 392648.0, "unidad": "ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área sembrada", "valor": 394421.0, "unidad": "ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.1, "unidad": "t/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 3.8, "unidad": "t/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.4, "unidad": "t/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.5, "unidad": "t/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.5, "unidad": "t/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Rendimiento", "valor": 4.8, "unidad": "t/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.0, "unidad": "t/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 6.8, "unidad": "t/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.4, "unidad": "t/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.3, "unidad": "t/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.2, "unidad": "t/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Rendimiento", "valor": 7.5, "unidad": "t/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 5.7, "unidad": "t/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 5.9, "unidad": "t/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 6.4, "unidad": "t/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 6.1, "unidad": "t/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 5.9, "unidad": "t/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Rendimiento", "valor": 6.3, "unidad": "t/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.2, "unidad": "t/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.1, "unidad": "t/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.6, "unidad": "t/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.3, "unidad": "t/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.5, "unidad": "t/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Rendimiento", "valor": 5.7, "unidad": "t/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 4.2, "unidad": "t/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 4.9, "unidad": "t/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 5.6, "unidad": "t/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 5.8, "unidad": "t/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 5.8, "unidad": "t/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Rendimiento", "valor": 5.3, "unidad": "t/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 5.6, "unidad": "t/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 5.6, "unidad": "t/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 6.4, "unidad": "t/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 6.0, "unidad": "t/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 6.0, "unidad": "t/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Rendimiento", "valor": 6.2, "unidad": "t/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 40751.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 42257.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 30809.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 42098.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "BAJO CAUCA", "rubro": "", "indicador": "Área cosechada", "valor": 51617.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 74847.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 69045.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 58877.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 65537.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "CENTRO", "rubro": "", "indicador": "Área cosechada", "valor": 73735.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 13161.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 12089.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 9030.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 14416.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "COSTA NORTE", "rubro": "", "indicador": "Área cosechada", "valor": 11527.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 302695.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 281361.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 240155.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 244751.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "LLANOS", "rubro": "", "indicador": "Área cosechada", "valor": 235934.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 20428.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 20588.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 18404.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 18989.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "SANTANDERES", "rubro": "", "indicador": "Área cosechada", "valor": 20559.0, "unidad": "ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 451882.0, "unidad": "ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 425340.0, "unidad": "ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 357274.0, "unidad": "ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 385791.0, "unidad": "ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "TOTAL NACIONAL", "rubro": "", "indicador": "Área cosechada", "valor": 393372.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Mensual", "mes": "Enero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1415971.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Febrero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1585857.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Marzo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1598071.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Abril", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1612400.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Mayo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1607643.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Junio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1427143.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Julio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1330514.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Agosto", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1185429.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Septiembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1186286.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Octubre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1193107.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Noviembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1192571.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "Mensual", "mes": "Diciembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1175371.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Enero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1077714.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Febrero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1035857.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Marzo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1024286.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Abril", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1023929.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Mayo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 997250.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Junio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 982086.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Julio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 929429.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Agosto", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 895701.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Septiembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 912091.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Octubre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 947982.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Noviembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1066929.0, "unidad": "COP/t"}, {"anio": 2021, "periodo": "Mensual", "mes": "Diciembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1183257.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Enero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1306661.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Febrero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1402714.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Marzo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1568657.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Abril", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1658232.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Mayo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1740714.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Junio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1748357.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Julio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1684357.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Agosto", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1747257.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Septiembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1851643.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Octubre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1913694.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Noviembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1934314.0, "unidad": "COP/t"}, {"anio": 2022, "periodo": "Mensual", "mes": "Diciembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1948714.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Enero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1963842.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Febrero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1985000.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Marzo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1927457.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Abril", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1875571.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Mayo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1747854.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Junio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1613186.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Julio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1581214.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Agosto", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1564257.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Septiembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1571714.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Octubre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1584679.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Noviembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1596714.0, "unidad": "COP/t"}, {"anio": 2023, "periodo": "Mensual", "mes": "Diciembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1620500.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Enero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1688400.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Febrero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1766911.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Marzo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1819500.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Abril", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1831500.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Mayo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1838286.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Junio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1842143.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Julio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1710013.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Agosto", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1601857.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Septiembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1562786.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Octubre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1571000.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Noviembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1568464.0, "unidad": "COP/t"}, {"anio": 2024, "periodo": "Mensual", "mes": "Diciembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1489494.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Enero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1411629.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Febrero", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1411268.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Marzo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1414821.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Abril", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1431457.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Mayo", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1434286.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Junio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1431429.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Julio", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1317371.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Agosto", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1392229.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Septiembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1393186.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Octubre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1394286.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Noviembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1397714.0, "unidad": "COP/t"}, {"anio": 2025, "periodo": "Mensual", "mes": "Diciembre", "pais": "Colombia", "zona": "Nacional", "rubro": "", "indicador": "Precio arroz paddy verde", "valor": 1397714.0, "unidad": "COP/t"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 58381.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1179789.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1204533.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 576808.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 1268421.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1155340.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 691792.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 565078.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 57969.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1195374.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1098973.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 601701.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 2148180.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1249144.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 715829.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 562802.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 57670.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1260127.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1358950.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 585336.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 2949349.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1468663.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 755502.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 892557.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 63046.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1470254.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1421969.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 634612.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 1877549.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1448559.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 768181.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 910265.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 59824.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1563019.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1489493.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 700136.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 1796578.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1606291.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 807368.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 1097698.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 59551.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1266950.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1204994.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 604397.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 1338203.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1168316.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 682581.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 624169.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 59563.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1225506.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1164169.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 585640.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 1478365.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1141458.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 706241.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 552814.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 62131.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1231254.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1182537.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 608917.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 3164729.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1326021.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 700341.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 733241.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 63336.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1465570.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1376009.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 626472.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 2603997.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1480857.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 777007.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 935190.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 70669.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1602855.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1538872.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 714454.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 1916719.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1579314.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 847222.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 1167932.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ASISTENCIA TÉCNICA", "indicador": "Costo por hectárea", "valor": 62769.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "ARRIENDO", "indicador": "Costo por hectárea", "valor": 1456438.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PREPARACIÓN Y SIEMBRA", "indicador": "Costo por hectárea", "valor": 1527991.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RIEGO", "indicador": "Costo por hectárea", "valor": 773434.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "FERTILIZACIÓN", "indicador": "Costo por hectárea", "valor": 2077749.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "PROTECCIÓN AL CULTIVO", "indicador": "Costo por hectárea", "valor": 1541488.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "RECOLECCIÓN Y TRANSPORTE", "indicador": "Costo por hectárea", "valor": 899688.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "OTROS", "indicador": "Costo por hectárea", "valor": 872892.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 6700143.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 7629973.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 9328154.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 8594434.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "II semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 9120406.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 6949161.0, "unidad": "COP/ha"}, {"anio": 2021, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 6913756.0, "unidad": "COP/ha"}, {"anio": 2022, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 9009171.0, "unidad": "COP/ha"}, {"anio": 2023, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 9328440.0, "unidad": "COP/ha"}, {"anio": 2024, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 9438038.0, "unidad": "COP/ha"}, {"anio": 2025, "periodo": "I semestre", "mes": "", "pais": "Colombia", "zona": "Nacional", "rubro": "TOTAL", "indicador": "Costo por hectárea", "valor": 9212450.0, "unidad": "COP/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz paddy seco", "valor": 326386.44, "unidad": "t"}, {"anio": 2021, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz paddy seco", "valor": 42346.92, "unidad": "t"}, {"anio": 2022, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz paddy seco", "valor": 254021.27, "unidad": "t"}, {"anio": 2023, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz paddy seco", "valor": 177106.83, "unidad": "t"}, {"anio": 2024, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz paddy seco", "valor": 282017.47, "unidad": "t"}, {"anio": 2025, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz paddy seco", "valor": 126910.62, "unidad": "t"}, {"anio": 2020, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz blanco", "valor": 227610.92, "unidad": "t"}, {"anio": 2021, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz blanco", "valor": 29144.71, "unidad": "t"}, {"anio": 2022, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz blanco", "valor": 177946.69, "unidad": "t"}, {"anio": 2023, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz blanco", "valor": 125111.36, "unidad": "t"}, {"anio": 2024, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz blanco", "valor": 196825.78, "unidad": "t"}, {"anio": 2025, "periodo": "Anual", "mes": "Todos los meses", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Importación arroz blanco", "valor": 87778.39, "unidad": "t"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Área cosechada", "valor": 185300.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Rendimiento", "valor": 6.599600000000001, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Producción", "valor": 1222910.0, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Área cosechada", "valor": 199993.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Rendimiento", "valor": 7.2661999999999995, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Producción", "valor": 1453187.0, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Área cosechada", "valor": 186070.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Rendimiento", "valor": 6.5697, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Producción", "valor": 1222426.0, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Área cosechada", "valor": 173002.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Rendimiento", "valor": 6.7237, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Producción", "valor": 1163209.0, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Área cosechada", "valor": 190950.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Rendimiento", "valor": 6.623600000000001, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Argentina", "zona": "Argentina", "rubro": "", "indicador": "Producción", "valor": 1264770.0, "unidad": "toneladas"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Área cosechada", "valor": 1677705.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Rendimiento", "valor": 6.6108, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Producción", "valor": 11091011.0, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Área cosechada", "valor": 1689190.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Rendimiento", "valor": 6.9031, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Producción", "valor": 11660605.0, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Área cosechada", "valor": 1622990.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Rendimiento", "valor": 6.6384, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Producción", "valor": 10773990.0, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Área cosechada", "valor": 1482748.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Rendimiento", "valor": 6.9369, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Producción", "valor": 10285663.0, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Área cosechada", "valor": 1586100.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Rendimiento", "valor": 6.7281, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Brasil", "zona": "Brasil", "rubro": "", "indicador": "Producción", "valor": 10671490.0, "unidad": "toneladas"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Área cosechada", "valor": 30341784.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Rendimiento", "valor": 7.0402, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Producción", "valor": 213610729.0, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Área cosechada", "valor": 30145222.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Rendimiento", "valor": 7.1124, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Producción", "valor": 214403870.0, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Área cosechada", "valor": 29688701.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Rendimiento", "valor": 7.0758, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Producción", "valor": 210070577.0, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Área cosechada", "valor": 29171513.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Rendimiento", "valor": 7.1324, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Producción", "valor": 208063574.0, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Área cosechada", "valor": 29256900.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Rendimiento", "valor": 7.1495, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "China", "zona": "China", "rubro": "", "indicador": "Producción", "valor": 209173000.0, "unidad": "toneladas"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Área cosechada", "valor": 656000.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Rendimiento", "valor": 4.6319, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Producción", "valor": 3038500.0, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Área cosechada", "valor": 665200.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Rendimiento", "valor": 4.4805, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Producción", "valor": 2980400.0, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Área cosechada", "valor": 563300.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Rendimiento", "valor": 4.6307, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Producción", "valor": 2608500.0, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Área cosechada", "valor": 667500.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Rendimiento", "valor": 4.5035, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Producción", "valor": 3006100.0, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Área cosechada", "valor": 627249.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Rendimiento", "valor": 4.5006, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Colombia", "zona": "Colombia", "rubro": "", "indicador": "Producción", "valor": 2823000.0, "unidad": "toneladas"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Área cosechada", "valor": 312900.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Rendimiento", "valor": 3.427300000000002, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Producción", "valor": 1072400.0, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Área cosechada", "valor": 340300.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Rendimiento", "valor": 3.5469, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Producción", "valor": 1207000.0, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Área cosechada", "valor": 337823.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Rendimiento", "valor": 3.7085, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Producción", "valor": 1252800.0, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Área cosechada", "valor": 343050.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Rendimiento", "valor": 3.8274, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Producción", "valor": 1313000.0, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Área cosechada", "valor": 402235.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Rendimiento", "valor": 3.8788, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Ecuador", "zona": "Ecuador", "rubro": "", "indicador": "Producción", "valor": 1560200.0, "unidad": "toneladas"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Área cosechada", "valor": 499361.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Rendimiento", "valor": 9.620299999999999, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Producción", "valor": 4804000.0, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Área cosechada", "valor": 464228.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Rendimiento", "valor": 9.1375, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Producción", "valor": 4241894.0, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Área cosechada", "valor": 482953.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Rendimiento", "valor": 8.9048, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Producción", "valor": 4300578.0, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Área cosechada", "valor": 680530.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Rendimiento", "valor": 9.152899999999999, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Producción", "valor": 6228827.0, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Área cosechada", "valor": 704158.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Rendimiento", "valor": 9.1315, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Egipto", "zona": "Egipto", "rubro": "", "indicador": "Producción", "valor": 6430000.0, "unidad": "toneladas"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Área cosechada", "valor": 416910.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Rendimiento", "valor": 8.2373, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Producción", "valor": 3434199.0, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Área cosechada", "valor": 425109.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Rendimiento", "valor": 8.3236, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Producción", "valor": 3538443.59, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Área cosechada", "valor": 406092.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Rendimiento", "valor": 8.2437, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Producción", "valor": 3347685.78, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Área cosechada", "valor": 420266.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Rendimiento", "valor": 8.095699999999999, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Producción", "valor": 3402367.71, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Área cosechada", "valor": 438228.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Rendimiento", "valor": 8.3072, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Perú", "zona": "Perú", "rubro": "", "indicador": "Producción", "valor": 3640432.02, "unidad": "toneladas"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Área cosechada", "valor": 7222403.0, "unidad": "ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Rendimiento", "valor": 5.9212, "unidad": "t/ha"}, {"anio": 2020, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Producción", "valor": 42764999.76, "unidad": "toneladas"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Área cosechada", "valor": 7219797.0, "unidad": "ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Rendimiento", "valor": 6.074, "unidad": "t/ha"}, {"anio": 2021, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Producción", "valor": 43852728.69, "unidad": "toneladas"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Área cosechada", "valor": 7088853.0, "unidad": "ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Rendimiento", "valor": 6.018, "unidad": "t/ha"}, {"anio": 2022, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Producción", "valor": 42660798.11, "unidad": "toneladas"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Área cosechada", "valor": 7115058.0, "unidad": "ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Rendimiento", "valor": 6.1135, "unidad": "t/ha"}, {"anio": 2023, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Producción", "valor": 43497624.81, "unidad": "toneladas"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Área cosechada", "valor": 7063212.0, "unidad": "ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Rendimiento", "valor": 6.1517, "unidad": "t/ha"}, {"anio": 2024, "periodo": "Anual", "mes": "", "pais": "Viet Nam", "zona": "Viet Nam", "rubro": "", "indicador": "Producción", "valor": 43450449.0, "unidad": "toneladas"}];
+
+const PALETTE = {
+  verdeOscuro:'#1B4332', verdeMedio:'#3E7C59', dorado:'#C9A227', azulPetroleo:'#14555A',
+  gris:'#8A9A8F', riesgo:'#B5473A', atencion:'#C9A227', oportunidad:'#2D6A4F', info:'#3D7A8A',
+};
+const ZONE_COLORS = ['#1B4332','#3E7C59','#7FB39A','#14555A','#5B8A94','#C9A227','#8A9A8F'];
+
+Chart.defaults.font.family = "'Work Sans', sans-serif";
+Chart.defaults.color = '#5B655F';
+Chart.defaults.font.size = 11.5;
+
+/* ---------- helpers ---------- */
+function uniq(arr){return [...new Set(arr)];}
+function fmt(n, d=0){ if(n===null||n===undefined||isNaN(n)) return '—';
+  return n.toLocaleString('es-CO', {maximumFractionDigits:d, minimumFractionDigits:d}); }
+function fmtCompact(n){
+  if(n===null||n===undefined||isNaN(n)) return '—';
+  if(Math.abs(n)>=1e6) return (n/1e6).toFixed(2)+' M';
+  if(Math.abs(n)>=1e3) return (n/1e3).toFixed(1)+' mil';
+  return fmt(n,1);
+}
+function sum(arr){return arr.reduce((a,b)=>a+b,0);}
+function filterRows(f){
+  return RAW.filter(r=>{
+    for(const k in f){
+      if(f[k]===undefined || f[k]===null) continue;
+      if(Array.isArray(f[k])){ if(!f[k].includes(r[k])) return false; }
+      else if(r[k]!==f[k]) return false;
+    }
+    return true;
+  });
+}
+
+const YEARS = uniq(RAW.map(r=>r.anio)).sort();
+const YEARS_FULL = YEARS.filter(y=>y<=2024); // years with both semesters / full annual data
+const ZONAS_REGION = ['BAJO CAUCA','CENTRO','COSTA NORTE','LLANOS','SANTANDERES'];
+const PAISES_FAO = uniq(filterRows({}).filter(r=>r.pais && r.zona===r.pais).map(r=>r.pais));
+
+/* ================= PAGE NAV ================= */
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.page').forEach(s=>s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.page).classList.add('active');
+  });
+});
+
+/* populate year selects */
+function fillYearSelect(sel, years, defaultYear){
+  sel.innerHTML = years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  sel.value = defaultYear;
+}
+const DEFAULT_YEAR = 2024;
+fillYearSelect(document.getElementById('p1-year'), YEARS_FULL, DEFAULT_YEAR);
+fillYearSelect(document.getElementById('p2-year'), YEARS, DEFAULT_YEAR);
+fillYearSelect(document.getElementById('p3-year'), YEARS, DEFAULT_YEAR);
+fillYearSelect(document.getElementById('p4-year'), YEARS_FULL, DEFAULT_YEAR);
+fillYearSelect(document.getElementById('p5-year'), YEARS_FULL, DEFAULT_YEAR);
+
+/* charts registry so we can destroy/redraw on filter change */
+const charts = {};
+function makeChart(id, config){
+  const ctx = document.getElementById(id);
+  if(charts[id]) charts[id].destroy();
+  charts[id] = new Chart(ctx, config);
+  return charts[id];
+}
+
+/* ============================================================
+   PAGE 1 — RESUMEN EJECUTIVO
+   ============================================================ */
+function nationalYearAgg(year){
+  const areaSemb = sum(filterRows({indicador:'Área sembrada', zona:'TOTAL NACIONAL', anio:year}).map(r=>r.valor));
+  const areaCosech = sum(filterRows({indicador:'Área cosechada', zona:'TOTAL NACIONAL', anio:year}).map(r=>r.valor));
+  const produccion = sum(filterRows({indicador:'Producción', zona:'TOTAL NACIONAL', anio:year}).map(r=>r.valor));
+  const rendimiento = areaCosech>0 ? produccion/areaCosech : null;
+  const preciosMes = filterRows({indicador:'Precio arroz paddy verde', zona:'Nacional', anio:year}).map(r=>r.valor);
+  const precioProm = preciosMes.length? sum(preciosMes)/preciosMes.length : null;
+  const costos = filterRows({indicador:'Costo por hectárea', rubro:'TOTAL', zona:'Nacional', anio:year}).map(r=>r.valor);
+  const costoProm = costos.length? sum(costos)/costos.length : null;
+  const rubrosYear = filterRows({indicador:'Costo por hectárea', zona:'Nacional', anio:year}).filter(r=>r.rubro && r.rubro!=='TOTAL');
+  const rubroAgg = {};
+  rubrosYear.forEach(r=>{ rubroAgg[r.rubro]=(rubroAgg[r.rubro]||0)+r.valor; });
+  let rubroTop = null, rubroTopVal = -Infinity;
+  for(const k in rubroAgg){ if(rubroAgg[k]>rubroTopVal){rubroTopVal=rubroAgg[k]; rubroTop=k;} }
+  const impBlanco = sum(filterRows({indicador:'Importación arroz blanco', anio:year}).map(r=>r.valor));
+  const impPaddy = sum(filterRows({indicador:'Importación arroz paddy seco', anio:year}).map(r=>r.valor));
+  const impTotal = impBlanco+impPaddy;
+  return {areaSemb, areaCosech, produccion, rendimiento, precioProm, costoProm, rubroTop, rubroTopVal, impTotal};
+}
+
+function trendPct(curr, prev){
+  if(prev===null||prev===undefined||prev===0||curr===null) return null;
+  return ((curr-prev)/prev)*100;
+}
+
+function renderKPI(container, label, value, unit, deltaPct, cls){
+  const el = document.createElement('div');
+  el.className = 'kpi'+(cls?(' '+cls):'');
+  let deltaHtml = '';
+  if(deltaPct!==null && deltaPct!==undefined && !isNaN(deltaPct)){
+    const dir = deltaPct>0.5?'up':(deltaPct<-0.5?'down':'flat');
+    const arrow = dir==='up'?'▲':(dir==='down'?'▼':'—');
+    deltaHtml = `<div class="kpi-delta ${dir}">${arrow} ${Math.abs(deltaPct).toFixed(1)}% vs. año anterior</div>`;
+  }
+  el.innerHTML = `<p class="kpi-label">${label}</p><div class="kpi-value">${value}<span class="kpi-unit">${unit}</span></div>${deltaHtml}`;
+  container.appendChild(el);
+}
+
+function renderPage1(){
+  const year = parseInt(document.getElementById('p1-year').value);
+  const prevYear = year-1;
+  const curr = nationalYearAgg(year);
+  const prev = nationalYearAgg(prevYear);
+
+  const kpiC = document.getElementById('p1-kpis');
+  kpiC.innerHTML = '';
+  renderKPI(kpiC,'Producción nacional', fmtCompact(curr.produccion),'t', trendPct(curr.produccion, prev.produccion));
+  renderKPI(kpiC,'Rendimiento promedio', curr.rendimiento? curr.rendimiento.toFixed(2):'—','t/ha', trendPct(curr.rendimiento, prev.rendimiento),'gold');
+  renderKPI(kpiC,'Área sembrada', fmtCompact(curr.areaSemb),'ha', trendPct(curr.areaSemb, prev.areaSemb));
+  renderKPI(kpiC,'Área cosechada', fmtCompact(curr.areaCosech),'ha', trendPct(curr.areaCosech, prev.areaCosech));
+  renderKPI(kpiC,'Precio promedio paddy verde', curr.precioProm? fmtCompact(curr.precioProm):'—','COP/t', trendPct(curr.precioProm, prev.precioProm),'petrol');
+  renderKPI(kpiC,'Costo total / hectárea', curr.costoProm? fmtCompact(curr.costoProm):'—','COP/ha', trendPct(curr.costoProm, prev.costoProm),'petrol');
+  renderKPI(kpiC,'Rubro de mayor costo', curr.rubroTop? (curr.rubroTop.charAt(0)+curr.rubroTop.slice(1).toLowerCase()):'—','','','gold');
+  renderKPI(kpiC,'Importaciones totales', fmtCompact(curr.impTotal),'t', trendPct(curr.impTotal, prev.impTotal));
+
+  // trend chart: national production + yield by year
+  const labels = YEARS_FULL;
+  const prodByYear = labels.map(y=>nationalYearAgg(y).produccion);
+  const rendByYear = labels.map(y=>nationalYearAgg(y).rendimiento);
+  makeChart('chart-p1-trend', {
+    data:{ labels, datasets:[
+      {type:'bar', label:'Producción (t)', data:prodByYear, backgroundColor:'#3E7C59', borderRadius:4, yAxisID:'y', order:2},
+      {type:'line', label:'Rendimiento (t/ha)', data:rendByYear, borderColor:'#C9A227', backgroundColor:'#C9A227', tension:.35, yAxisID:'y1', order:1, pointRadius:4, borderWidth:2.5}
+    ]},
+    options:{
+      responsive:true,
+      plugins:{legend:{position:'bottom'}},
+      scales:{
+        y:{position:'left', title:{display:true, text:'Toneladas'}, ticks:{callback:v=>fmtCompact(v)}},
+        y1:{position:'right', title:{display:true, text:'t/ha'}, grid:{drawOnChartArea:false}}
+      }
+    }
+  });
+
+  const lastIdx = labels.length-1;
+  const yoy = trendPct(prodByYear[lastIdx], prodByYear[lastIdx-1]);
+  document.getElementById('p1-insight').innerHTML =
+    `<b>Lectura:</b> en ${labels[lastIdx]} la producción nacional ${yoy>=0?'creció':'cayó'} ${Math.abs(yoy).toFixed(1)}% frente a ${labels[lastIdx-1]},
+     con un rendimiento promedio de ${rendByYear[lastIdx]?.toFixed(2)} t/ha. El costo por hectárea (${fmtCompact(curr.costoProm)} COP/ha)
+     está impulsado principalmente por <b>${curr.rubroTop?.toLowerCase()}</b>, mientras que las importaciones totales alcanzaron ${fmtCompact(curr.impTotal)} t.`;
+}
+document.getElementById('p1-year').addEventListener('change', renderPage1);
+
+/* ============================================================
+   PAGE 2 — PRODUCCIÓN Y RENDIMIENTO
+   ============================================================ */
+function zoneAgg(indicador, year, semestre){
+  const periodos = semestre==='AMBOS' ? ['I semestre','II semestre'] : [semestre];
+  const out = {};
+  ZONAS_REGION.forEach(z=>{
+    const rows = filterRows({indicador, zona:z, anio:year, periodo:periodos});
+    out[z] = indicador==='Rendimiento' ? (rows.length? sum(rows.map(r=>r.valor))/rows.length : null)
+                                         : sum(rows.map(r=>r.valor));
+  });
+  return out;
+}
+
+function renderPage2(){
+  const year = parseInt(document.getElementById('p2-year').value);
+  const semestre = document.getElementById('p2-semestre').value;
+
+  const prod = zoneAgg('Producción', year, semestre);
+  const rend = zoneAgg('Rendimiento', year, semestre);
+  const zones = ZONAS_REGION;
+
+  makeChart('chart-p2-prodzona', {
+    type:'bar',
+    data:{ labels:zones, datasets:[{label:'Producción (t)', data:zones.map(z=>prod[z]), backgroundColor: zones.map((z,i)=>ZONE_COLORS[i]), borderRadius:5}]},
+    options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{x:{ticks:{callback:v=>fmtCompact(v)}}} }
+  });
+
+  const rendVals = zones.map(z=>rend[z]);
+  const maxRend = Math.max(...rendVals.filter(v=>v!==null));
+  makeChart('chart-p2-rendzona', {
+    type:'bar',
+    data:{ labels:zones, datasets:[{label:'Rendimiento (t/ha)', data:rendVals,
+      backgroundColor: rendVals.map(v=> v===maxRend? '#C9A227':'#3E7C59'), borderRadius:5}]},
+    options:{ indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{x:{title:{display:true,text:'t/ha'}}} }
+  });
+
+  // national production series (already available page1 style)
+  const labels = YEARS_FULL;
+  const prodByYear = labels.map(y=>sum(filterRows({indicador:'Producción', zona:'TOTAL NACIONAL', anio:y}).map(r=>r.valor)));
+  makeChart('chart-p2-serie', {
+    type:'line',
+    data:{labels, datasets:[{label:'Producción nacional (t)', data:prodByYear, borderColor:'#1B4332', backgroundColor:'rgba(27,67,50,0.08)', fill:true, tension:.3, pointRadius:4}]},
+    options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  // heatmap rendimiento by zone x year
+  const heat = document.getElementById('heatmap-rend');
+  let html = '<tr><th>Zona</th>' + YEARS_FULL.map(y=>`<th>${y}</th>`).join('') + '</tr>';
+  const allVals = [];
+  const matrix = {};
+  ZONAS_REGION.concat(['TOTAL NACIONAL']).forEach(z=>{
+    matrix[z] = YEARS_FULL.map(y=>{
+      const rows = filterRows({indicador:'Rendimiento', zona:z, anio:y});
+      const v = rows.length? sum(rows.map(r=>r.valor))/rows.length : null;
+      if(v!==null) allVals.push(v);
+      return v;
+    });
+  });
+  const minV = Math.min(...allVals), maxV = Math.max(...allVals);
+  function heatColor(v){
+    if(v===null) return '#F1F0EA';
+    const t = (v-minV)/(maxV-minV||1);
+    // interpolate gris-claro-ish gold -> verde oscuro
+    const r1=201,g1=162,b1=39, r2=27,g2=67,b2=50;
+    const r=Math.round(r1+(r2-r1)*t), g=Math.round(g1+(g2-g1)*t), b=Math.round(b1+(b2-b1)*t);
+    return `rgb(${r},${g},${b})`;
+  }
+  ZONAS_REGION.concat(['TOTAL NACIONAL']).forEach(z=>{
+    html += `<tr><td class="zonelabel">${z}</td>` + matrix[z].map(v=>{
+      const c = heatColor(v);
+      const textColor = v!==null && (v-minV)/(maxV-minV||1) > 0.55 ? '#fff' : '#1E2421';
+      return `<td style="background:${c}; color:${textColor};">${v!==null? v.toFixed(1):'—'}</td>`;
+    }).join('') + '</tr>';
+  });
+  heat.innerHTML = html;
+
+  // areas: sembrada vs cosechada
+  const areaSemb = zoneAgg('Área sembrada', year, semestre);
+  const areaCosech = zoneAgg('Área cosechada', year, semestre);
+  makeChart('chart-p2-areas', {
+    type:'bar',
+    data:{ labels:zones, datasets:[
+      {label:'Área sembrada (ha)', data:zones.map(z=>areaSemb[z]), backgroundColor:'#7FB39A', borderRadius:4},
+      {label:'Área cosechada (ha)', data:zones.map(z=>areaCosech[z]), backgroundColor:'#1B4332', borderRadius:4}
+    ]},
+    options:{responsive:true, plugins:{legend:{position:'bottom'}}, scales:{y:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  // insight: biggest gap
+  let gapZone=null, gapVal=-Infinity;
+  zones.forEach(z=>{
+    const g = (areaSemb[z]||0) - (areaCosech[z]||0);
+    if(g>gapVal){gapVal=g; gapZone=z;}
+  });
+  const leaderProd = zones.reduce((a,b)=>prod[a]>prod[b]?a:b);
+  const leaderRend = zones.reduce((a,b)=>(rend[a]||0)>(rend[b]||0)?a:b);
+  document.getElementById('p2-insight').innerHTML =
+    `<b>Lectura:</b> ${leaderProd} concentra el mayor volumen de producción, mientras que ${leaderRend} logra el mejor rendimiento por hectárea.
+     ${gapZone} presenta la mayor brecha entre área sembrada y cosechada (${fmtCompact(gapVal)} ha), lo que puede indicar pérdidas por clima, plagas o abandono de lotes.`;
+}
+document.getElementById('p2-year').addEventListener('change', renderPage2);
+document.getElementById('p2-semestre').addEventListener('change', renderPage2);
+
+/* ============================================================
+   PAGE 3 — PRECIOS Y COSTOS
+   ============================================================ */
+const MESES_ORDER = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+function renderPage3(){
+  const year = parseInt(document.getElementById('p3-year').value);
+  const semestre = document.getElementById('p3-semestre').value;
+
+  // monthly price series across all years
+  const priceRows = filterRows({indicador:'Precio arroz paddy verde', zona:'Nacional'})
+    .slice().sort((a,b)=> a.anio-b.anio || MESES_ORDER.indexOf(a.mes)-MESES_ORDER.indexOf(b.mes));
+  const priceLabels = priceRows.map(r=>`${r.mes.slice(0,3)} ${String(r.anio).slice(2)}`);
+  const priceVals = priceRows.map(r=>r.valor);
+  makeChart('chart-p3-precio', {
+    type:'line',
+    data:{labels:priceLabels, datasets:[{label:'Precio paddy verde (COP/t)', data:priceVals, borderColor:'#14555A', backgroundColor:'rgba(20,85,90,0.08)', fill:true, tension:.25, pointRadius:0, borderWidth:2}]},
+    options:{responsive:true, plugins:{legend:{display:false}}, scales:{x:{ticks:{maxTicksLimit:14}}, y:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  // price vs cost combo — yearly averages
+  const yrs = YEARS_FULL;
+  const priceByYear = yrs.map(y=>{
+    const rows = filterRows({indicador:'Precio arroz paddy verde', zona:'Nacional', anio:y}).map(r=>r.valor);
+    return rows.length? sum(rows)/rows.length : null;
+  });
+  const costByYear = yrs.map(y=>{
+    const rows = filterRows({indicador:'Costo por hectárea', rubro:'TOTAL', zona:'Nacional', anio:y}).map(r=>r.valor);
+    return rows.length? sum(rows)/rows.length : null;
+  });
+  makeChart('chart-p3-preciocosto', {
+    data:{labels:yrs, datasets:[
+      {type:'line', label:'Precio paddy verde (COP/t)', data:priceByYear, borderColor:'#14555A', yAxisID:'y', tension:.3, pointRadius:4, borderWidth:2.5},
+      {type:'line', label:'Costo por hectárea (COP/ha)', data:costByYear, borderColor:'#C9A227', yAxisID:'y1', tension:.3, pointRadius:4, borderWidth:2.5, borderDash:[5,3]}
+    ]},
+    options:{responsive:true, plugins:{legend:{position:'bottom'}},
+      scales:{
+        y:{position:'left', title:{display:true,text:'COP / t'}, ticks:{callback:v=>fmtCompact(v)}},
+        y1:{position:'right', title:{display:true,text:'COP / ha'}, grid:{drawOnChartArea:false}, ticks:{callback:v=>fmtCompact(v)}}
+      }}
+  });
+
+  // rubro composition for selected year/semester
+  const rubroRows = filterRows({indicador:'Costo por hectárea', zona:'Nacional', anio:year, periodo:semestre}).filter(r=>r.rubro && r.rubro!=='TOTAL');
+  rubroRows.sort((a,b)=>b.valor-a.valor);
+  makeChart('chart-p3-rubros', {
+    type:'bar',
+    data:{labels:rubroRows.map(r=>r.rubro.charAt(0)+r.rubro.slice(1).toLowerCase()),
+      datasets:[{label:'COP/ha', data:rubroRows.map(r=>r.valor),
+        backgroundColor: rubroRows.map((r,i)=> i===0? '#C9A227':'#3E7C59'), borderRadius:4}]},
+    options:{indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{x:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  // cost evolution by semester
+  const costRows = filterRows({indicador:'Costo por hectárea', rubro:'TOTAL', zona:'Nacional'})
+    .slice().sort((a,b)=> a.anio-b.anio || (a.periodo==='I semestre'?0:1)-(b.periodo==='I semestre'?0:1));
+  makeChart('chart-p3-costoevol', {
+    type:'line',
+    data:{labels:costRows.map(r=>`${r.periodo.slice(0,1)}-${r.anio}`), datasets:[{label:'Costo/ha', data:costRows.map(r=>r.valor), borderColor:'#1B4332', backgroundColor:'rgba(27,67,50,0.08)', fill:true, tension:.25, pointRadius:3}]},
+    options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  const topRubro = rubroRows[0];
+  const costYoy = trendPct(costByYear[costByYear.length-1], costByYear[costByYear.length-2]);
+  const priceYoy = trendPct(priceByYear[priceByYear.length-1], priceByYear[priceByYear.length-2]);
+  document.getElementById('p3-insight').innerHTML =
+    `<b>Lectura:</b> en ${year} (${semestre}), <b>${topRubro? topRubro.rubro.toLowerCase():'—'}</b> es el rubro que más presiona el costo por hectárea
+     (${topRubro? fmtCompact(topRubro.valor):''} COP/ha). El costo total ${costYoy>=0?'subió':'bajó'} ${Math.abs(costYoy).toFixed(1)}% interanual, mientras el precio
+     ${priceYoy>=0?'subió':'bajó'} ${Math.abs(priceYoy).toFixed(1)}% — ${(priceYoy - costYoy) >=0 ? 'el precio compensó parcialmente el aumento de costos' : 'los costos crecieron por encima del precio, presionando el margen'}.`;
+}
+document.getElementById('p3-year').addEventListener('change', renderPage3);
+document.getElementById('p3-semestre').addEventListener('change', renderPage3);
+
+/* ============================================================
+   PAGE 4 — COMERCIO EXTERIOR E INTERNACIONAL
+   ============================================================ */
+function renderPage4(){
+  const year = parseInt(document.getElementById('p4-year').value);
+
+  const impBlanco = sum(filterRows({indicador:'Importación arroz blanco', anio:year}).map(r=>r.valor));
+  const impPaddy = sum(filterRows({indicador:'Importación arroz paddy seco', anio:year}).map(r=>r.valor));
+  makeChart('chart-p4-importipo', {
+    type:'bar',
+    data:{labels:['Arroz blanco','Arroz paddy seco'], datasets:[{label:'Toneladas', data:[impBlanco, impPaddy], backgroundColor:['#14555A','#C9A227'], borderRadius:6}]},
+    options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  const yrs = YEARS_FULL.concat(YEARS.filter(y=>y===2025));
+  const impSerie = yrs.map(y=> sum(filterRows({indicador:['Importación arroz blanco','Importación arroz paddy seco'], anio:y}).map(r=>r.valor)) );
+  makeChart('chart-p4-imporserie', {
+    type:'line',
+    data:{labels:yrs, datasets:[{label:'Importaciones totales (t)', data:impSerie, borderColor:'#B5473A', backgroundColor:'rgba(181,71,58,0.08)', fill:true, tension:.3, pointRadius:4}]},
+    options:{responsive:true, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  const prodRows = filterRows({indicador:'Producción', anio:year}).filter(r=> r.pais===r.zona); // country-level FAOSTAT rows only
+  prodRows.sort((a,b)=>b.valor-a.valor);
+  makeChart('chart-p4-rankprod', {
+    type:'bar',
+    data:{labels:prodRows.map(r=>r.pais), datasets:[{label:'Producción (t)', data:prodRows.map(r=>r.valor),
+      backgroundColor:prodRows.map(r=> r.pais==='Colombia'? '#C9A227':'#3E7C59'), borderRadius:5}]},
+    options:{indexAxis:'y', responsive:true, plugins:{legend:{display:false}}, scales:{x:{ticks:{callback:v=>fmtCompact(v)}}}}
+  });
+
+  const rendRows = filterRows({indicador:'Rendimiento', anio:year}).filter(r=> r.pais===r.zona);
+  rendRows.sort((a,b)=>b.valor-a.valor);
+  const avgRend = sum(rendRows.map(r=>r.valor))/rendRows.length;
+  makeChart('chart-p4-rankrend', {
+    type:'bar',
+    data:{labels:rendRows.map(r=>r.pais), datasets:[{label:'Rendimiento (t/ha)', data:rendRows.map(r=>r.valor),
+      backgroundColor:rendRows.map(r=> r.pais==='Colombia'? '#C9A227':'#14555A'), borderRadius:5}]},
+    options:{responsive:true, plugins:{legend:{display:false},
+      annotation:undefined},
+      scales:{y:{title:{display:true,text:'t/ha'}}}}
+  });
+
+  const colRank = prodRows.findIndex(r=>r.pais==='Colombia')+1;
+  const colRend = rendRows.find(r=>r.pais==='Colombia')?.valor;
+  const impYoy = trendPct(impSerie[impSerie.length-1], impSerie[impSerie.length-2]);
+  document.getElementById('p4-insight').innerHTML =
+    `<b>Lectura:</b> en ${year}, Colombia ocupa el puesto ${colRank} de ${prodRows.length} en producción dentro del grupo comparado, con un rendimiento de
+     ${colRend? colRend.toFixed(2):'—'} t/ha frente a un promedio del grupo de ${avgRend.toFixed(2)} t/ha
+     (${colRend>avgRend? 'por encima':'por debajo'} del promedio). Las importaciones totales ${impYoy>=0?'aumentaron':'disminuyeron'} ${Math.abs(impYoy).toFixed(1)}% frente al año anterior.`;
+}
+document.getElementById('p4-year').addEventListener('change', renderPage4);
+
+/* ============================================================
+   PAGE 5 — MATRIZ ESTRATÉGICA
+   ============================================================ */
+function renderPage5(){
+  const year = parseInt(document.getElementById('p5-year').value);
+  const prevYear = year-1;
+
+  const prod = zoneAgg2(year), prodPrev = zoneAgg2(prevYear);
+  function zoneAgg2(y){
+    const out = {};
+    ZONAS_REGION.forEach(z=>{
+      const prodRows = filterRows({indicador:'Producción', zona:z, anio:y});
+      const rendRows = filterRows({indicador:'Rendimiento', zona:z, anio:y});
+      const areaRows = filterRows({indicador:'Área cosechada', zona:z, anio:y});
+      out[z] = {
+        produccion: sum(prodRows.map(r=>r.valor)),
+        rendimiento: rendRows.length? sum(rendRows.map(r=>r.valor))/rendRows.length : 0,
+        area: sum(areaRows.map(r=>r.valor))
+      };
+    });
+    return out;
+  }
+
+  const zones = ZONAS_REGION;
+  const maxArea = Math.max(...zones.map(z=>prod[z].area));
+  makeChart('chart-p5-scatter', {
+    type:'bubble',
+    data:{ datasets: zones.map((z,i)=>({
+      label:z,
+      data:[{x:prod[z].rendimiento, y:prod[z].produccion, r: 8 + (prod[z].area/maxArea)*22}],
+      backgroundColor: ZONE_COLORS[i]+'CC'
+    }))},
+    options:{
+      responsive:true,
+      plugins:{legend:{position:'bottom'}, tooltip:{callbacks:{label:(ctx)=>`${ctx.dataset.label}: ${ctx.raw.y.toLocaleString('es-CO')} t · ${ctx.raw.x.toFixed(2)} t/ha`}}},
+      scales:{
+        x:{title:{display:true, text:'Rendimiento (t/ha)'}},
+        y:{title:{display:true, text:'Producción (t)'}, ticks:{callback:v=>fmtCompact(v)}}
+      }
+    }
+  });
+
+  // alerts
+  const natCostYear = sum(filterRows({indicador:'Costo por hectárea', rubro:'TOTAL', zona:'Nacional', anio:year}).map(r=>r.valor)) /
+                        (filterRows({indicador:'Costo por hectárea', rubro:'TOTAL', zona:'Nacional', anio:year}).length||1);
+  const natCostPrev = sum(filterRows({indicador:'Costo por hectárea', rubro:'TOTAL', zona:'Nacional', anio:prevYear}).map(r=>r.valor)) /
+                        (filterRows({indicador:'Costo por hectárea', rubro:'TOTAL', zona:'Nacional', anio:prevYear}).length||1);
+  const costChange = trendPct(natCostYear, natCostPrev);
+
+  const natRendYear = sum(zones.map(z=>prod[z].rendimiento))/zones.length;
+  const natRendPrev = sum(zones.map(z=>prodPrev[z].rendimiento))/zones.length;
+  const rendChange = trendPct(natRendYear, natRendPrev);
+
+  const impYear = sum(filterRows({indicador:['Importación arroz blanco','Importación arroz paddy seco'], anio:year}).map(r=>r.valor));
+  const impPrev = sum(filterRows({indicador:['Importación arroz blanco','Importación arroz paddy seco'], anio:prevYear}).map(r=>r.valor));
+  const impChange = trendPct(impYear, impPrev);
+
+  const lowYieldZone = zones.reduce((a,b)=> prod[a].rendimiento < prod[b].rendimiento ? a : b);
+  const highYieldZone = zones.reduce((a,b)=> prod[a].rendimiento > prod[b].rendimiento ? a : b);
+
+  const alerts = [];
+  alerts.push({
+    tag: costChange>5?'riesgo':(costChange>0?'atencion':'oportunidad'),
+    title:'Costo de producción',
+    text:`El costo promedio por hectárea ${costChange>=0?'aumentó':'disminuyó'} ${Math.abs(costChange).toFixed(1)}% frente a ${prevYear}.`
+  });
+  alerts.push({
+    tag:'atencion',
+    title:'Baja productividad regional',
+    text:`${lowYieldZone} registra el rendimiento más bajo (${prod[lowYieldZone].rendimiento.toFixed(2)} t/ha), muy por debajo de ${highYieldZone} (${prod[highYieldZone].rendimiento.toFixed(2)} t/ha).`
+  });
+  alerts.push({
+    tag: impChange>10?'riesgo':(impChange>0?'atencion':'oportunidad'),
+    title:'Importaciones',
+    text:`Las importaciones totales ${impChange>=0?'crecieron':'cayeron'} ${Math.abs(impChange).toFixed(1)}% interanual, ${impChange>10?'representando presión competitiva sobre el mercado nacional.':'sin señal de riesgo inmediato para el mercado nacional.'}`
+  });
+  alerts.push({
+    tag: rendChange<0?'riesgo':'oportunidad',
+    title:'Rendimiento nacional',
+    text:`El rendimiento promedio de las zonas ${rendChange>=0?'mejoró':'se redujo'} ${Math.abs(rendChange).toFixed(1)}% respecto a ${prevYear}.`
+  });
+
+  const alertGrid = document.getElementById('alert-grid');
+  alertGrid.innerHTML = alerts.map(a=>`
+    <div class="alert ${a.tag}">
+      <span class="tag">${a.tag}</span>
+      <h4>${a.title}</h4>
+      <p>${a.text}</p>
+    </div>`).join('');
+
+  const recos = [
+    `Priorizar asistencia técnica y transferencia de conocimiento en <b>${lowYieldZone}</b> para cerrar la brecha de rendimiento frente a ${highYieldZone}.`,
+    `${costChange>0? `Revisar el rubro de mayor peso en costos (fertilización/arriendo) en busca de eficiencias, dado el incremento de ${Math.abs(costChange).toFixed(1)}% interanual.` : 'Mantener el control de costos logrado este año como referencia de eficiencia para las demás zonas.'}`,
+    `${impChange>0? 'Monitorear la competitividad frente a las importaciones, evaluando coberturas o ajustes de precio de sustentación.' : 'Aprovechar la reducción de importaciones para fortalecer la colocación de cosecha nacional en el mercado interno.'}`,
+    `Replicar las prácticas de ${highYieldZone} (mejor rendimiento t/ha) como referencia técnica para el resto de zonas productoras.`
+  ];
+  document.getElementById('reco-list').innerHTML = recos.map((r,i)=>`<li><span class="n">${i+1}</span><span>${r}</span></li>`).join('');
+}
+document.getElementById('p5-year').addEventListener('change', renderPage5);
+
+/* ================= INIT ================= */
+renderPage1();
+renderPage2();
+renderPage3();
+renderPage4();
+renderPage5();
+</script>
+</body>
+</html>
